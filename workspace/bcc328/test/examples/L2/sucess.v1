@@ -1,0 +1,20 @@
+push 10
+store Var "a"
+push 1
+load Var "x"
+push 1
+add
+store Var "a"
+load Var "a"
+print
+push 5
+load Var "x"
+push 1
+sub
+store Var "a"
+load Var "a"
+print
+pop 1
+load Var "x"
+print
+pop 1

@@ -1,0 +1,16 @@
+// x global mutável
+a := 10;
+
+// x imutável no escopo externo = 1
+def x := 1 in
+  a := x + 1;       // a = 1 + 1 = 2
+  print(a);         // Deve imprimir 2
+
+  // Novo escopo com shadowing de x
+  def x := 5 in
+    a := x - 1;     // a = 5 - 1 = 4
+    print(a);       // Deve imprimir 4
+  end;
+
+  print(x);         // x volta a ser 1. Deve imprimir 1
+end;

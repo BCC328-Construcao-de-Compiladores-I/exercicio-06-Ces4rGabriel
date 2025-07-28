@@ -1,0 +1,4 @@
+def y := 100 in
+  print(y);
+  y := 200;   // ERRO! Tentando atribuir a uma variável imutável.
+end;

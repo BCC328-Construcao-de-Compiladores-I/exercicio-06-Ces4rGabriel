@@ -1,12 +1,12 @@
 {
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
-module L.L1.Frontend.Lexer (Token (..), Lexeme (..), lexer) where 
+module L.L2.Frontend.Lexer (Token (..), Lexeme (..), lexer) where
 }
 
 %wrapper "posn"
 
-$digit = 0-9            -- digits
-$alpha = [a-zA-Z] 
+$digit = 0-9           
+$alpha = [a-zA-Z]
 $char = [^"\n] -- qualquer caractere exceto aspas duplas e nova linha
 
 -- second RE macros
@@ -19,7 +19,7 @@ $char = [^"\n] -- qualquer caractere exceto aspas duplas e nova linha
 
 tokens :-
       $white+       ;
-      "//" .*       ;
+      "//" .* ;
       @number       {mkNumber}
       @string       {mkString}
       "("           {simpleToken TLParen}
@@ -33,7 +33,11 @@ tokens :-
       ","           {simpleToken TComma}
       ":="          {simpleToken TAssign}
       "-"           {simpleToken TMinus}
-      @id         {mkId}
+      -- Novas palavras-chave de L2 (antes de @id)
+      "def"         {simpleToken TDef}
+      "in"          {simpleToken TIn}
+      "end"         {simpleToken TEnd}
+      @id           {mkId}
 
 {
 data Token
@@ -50,17 +54,19 @@ data Lexeme
   | TTimes
   | TEOF
   | TRead
-  | TPrint  
+  | TPrint
   | TSemicolon
   | TComma
-  | TAssign 
+  | TAssign
   | TString String
   | TId String
   | TMinus
   | TDiv
+  -- Novos lexemas para L2
+  | TDef
+  | TIn
+  | TEnd
   deriving (Eq, Ord, Show)
-
-
 
 position :: AlexPosn -> (Int, Int)
 position (AlexPn _ x y) = (x,y)

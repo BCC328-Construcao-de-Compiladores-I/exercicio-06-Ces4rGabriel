@@ -1,0 +1,5 @@
+// Teste para o lexer da L2
+def x := 100 in
+  print("O valor de x e: ");
+  print(x);
+end
