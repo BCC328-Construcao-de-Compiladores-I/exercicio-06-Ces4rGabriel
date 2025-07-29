@@ -37,8 +37,8 @@ parseOptions args =
     ("--lexer-only" : arg : _) -> [Lexer arg]
     ("--parse-only" : arg : _) -> [Parser arg]
     ("--interpret" : arg : _)  -> [Interpret arg]
-    ("--v1-compile" : arg : _) -> [V1Compile arg] -- NOVA OPÇÃO
-    ("--c-compile" : arg : _)  -> [CCompile arg]  -- NOVA OPÇÃO
+    ("--v1" : arg : _) -> [V1Compile arg] -- NOVA OPÇÃO
+    ("--c" : arg : _)  -> [CCompile arg]  -- NOVA OPÇÃO
     _ -> [Help]
 
 runWithOptions :: [Option] -> IO ()
@@ -110,8 +110,8 @@ helpMessage = putStrLn $ unlines [
     "  --lexer-only <arquivo>   : Realiza a analise lexica do programa.",
     "  --parse-only <arquivo>   : Realiza a analise sintatica do programa.",
     "  --interpret <arquivo>    : Interpreta o programa de entrada.",
-    "  --v1-compile <arquivo>   : Compila o programa para codigo da maquina virtual V1.",
-    "  --c-compile <arquivo>    : Compila o programa para um executavel usando C e GCC.",
+    "  --v1 <arquivo>   : Compila o programa para codigo da maquina virtual V1.",
+    "  --c <arquivo>    : Compila o programa para um executavel usando C e GCC.",
     "  --help                   : Exibe esta mensagem de ajuda."
     ]
 

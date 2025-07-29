@@ -1,0 +1,4 @@
+def nome := "Ana" in
+  print("Bem-vinda");
+  print(nome);
+end

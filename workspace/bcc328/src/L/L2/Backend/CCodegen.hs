@@ -5,13 +5,14 @@ import L.L2.Frontend.Syntax
 import Utils.Value
 import Utils.Var
 
--- Função principal para gerar código C a partir de um programa L2.
+varName :: Var -> String
+varName (Var s) = s
+
 cgen :: L2 -> String
 cgen l2@(L2 stmts) =
   unlines [ "#include <stdio.h>"
           , "#include <string.h>"
           , ""
-          , "// Declaracao de variaveis mutaveis (globais)"
           , declareMutableVars l2
           , ""
           , "int main() {"
@@ -31,28 +32,37 @@ findMutableVars (L2 stmts) = nub $ go stmts
 declareMutableVars :: L2 -> String
 declareMutableVars l2 =
   let vars = findMutableVars l2
-  in unlines $ map (\v -> "int " ++ show v ++ " = 0;") vars
+  in unlines $ map (\v -> "int " ++ varName v ++ " = 0;") vars
 
 codeForStmts :: [S2] -> String
 codeForStmts stmts = unlines $ map (indent . codeForS) stmts
   where indent s = "  " ++ s
 
 codeForS :: S2 -> String
-codeForS (LAssign var expr) = show var ++ " = " ++ codeForE expr ++ ";"
-codeForS (LPrint expr) = "printf(\"%d\\n\", " ++ codeForE expr ++ ");"
+codeForS (LAssign var expr) = varName var ++ " = " ++ codeForE expr ++ ";"
+
+codeForS (LPrint expr) =
+  case expr of
+    LVal (VStr _) -> "printf(\"%s\\n\", " ++ codeForE expr ++ ");"
+    _             -> "printf(\"%d\\n\", " ++ codeForE expr ++ ");"
+
 codeForS (LRead prompt var) =
-  "printf(\"" ++ prompt ++ "\"); scanf(\"%d\", &" ++ show var ++ ");"
+  "printf(\"" ++ prompt ++ "\"); scanf(\"%d\", &" ++ varName var ++ ");"
+
 codeForS (Def var expr stmts) =
-  unlines [ "{"
-          , "  int " ++ show var ++ " = " ++ codeForE expr ++ ";"
-          , codeForStmts stmts
-          , "}"
-          ]
+  let decl = case expr of
+                LVal (VStr _) -> "const char* " ++ varName var ++ " = " ++ codeForE expr ++ ";"
+                _             -> "const int " ++ varName var ++ " = " ++ codeForE expr ++ ";"
+  in unlines [ "{"
+             , decl
+             , codeForStmts stmts
+             , "}"
+             ]
 
 codeForE :: E2 -> String
 codeForE (LVal (VInt n)) = show n
 codeForE (LVal (VStr s)) = "\"" ++ s ++ "\""
-codeForE (LVar var) = show var
+codeForE (LVar var) = varName var
 codeForE (LAdd e1 e2) = "(" ++ codeForE e1 ++ " + " ++ codeForE e2 ++ ")"
 codeForE (LMinus e1 e2) = "(" ++ codeForE e1 ++ " - " ++ codeForE e2 ++ ")"
 codeForE (LMul e1 e2) = "(" ++ codeForE e1 ++ " * " ++ codeForE e2 ++ ")"
